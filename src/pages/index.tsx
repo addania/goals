@@ -196,7 +196,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                createGoalMutation.mutateAsync(goal1);
+                createGoalMutation.mutate(goal1);
               }}
             >
               Add Goal 1
@@ -208,7 +208,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                deleteGoalMutation.mutateAsync({ id: "1" });
+                deleteGoalMutation.mutate({ id: "1" });
               }}
             >
               Delete Goal 1
@@ -220,7 +220,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                editGoalMutation.mutateAsync({
+                editGoalMutation.mutate({
                   id: "1",
                   image: "https://i.imgur.com/C9QB8oj.png",
                 });
@@ -235,7 +235,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                editGoalMutation.mutateAsync({
+                editGoalMutation.mutate({
                   id: "1",
                   name: "XXX",
                 });
@@ -250,7 +250,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                editGoalMutation.mutateAsync({
+                editGoalMutation.mutate({
                   id: "1",
                   description: "XXX",
                 });
@@ -265,7 +265,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                editGoalMutation.mutateAsync({
+                editGoalMutation.mutate({
                   id: "1",
                   completion: 0,
                 });
@@ -282,7 +282,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                createGoalMutation.mutateAsync(goal2);
+                createGoalMutation.mutate(goal2);
               }}
             >
               Add Goal 2
@@ -294,7 +294,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                deleteGoalMutation.mutateAsync({ id: "2" });
+                deleteGoalMutation.mutate({ id: "2" });
               }}
             >
               Delete Goal 2
@@ -308,7 +308,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                createGoalMutation.mutateAsync(goal3);
+                createGoalMutation.mutate(goal3);
               }}
             >
               Add Goal 3
@@ -320,7 +320,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                deleteGoalMutation.mutateAsync({ id: "3" });
+                deleteGoalMutation.mutate({ id: "3" });
               }}
             >
               Delete Goal 3
@@ -334,7 +334,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                createGoalMutation.mutateAsync(goal4);
+                createGoalMutation.mutate(goal4);
               }}
             >
               Add Goal 4
@@ -346,7 +346,7 @@ const Home: NextPage = () => {
               radius="md"
               size="sm"
               onClick={() => {
-                deleteGoalMutation.mutateAsync({ id: "4" });
+                deleteGoalMutation.mutate({ id: "4" });
               }}
             >
               Delete Goal 4
