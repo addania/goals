@@ -7,17 +7,76 @@ import { Card, Image, Text, Badge, Button, Group } from "@mantine/core";
 
 import { api } from "~/utils/api";
 
-// https://i.imgur.com/tnuKXQf.png
 // https://i.imgur.com/zGaB4zf.png
+// https://i.imgur.com/tnuKXQf.png
+// https://i.imgur.com/mZ3D5A3.png
+// https://i.imgur.com/mZ3D5A3.png
+
+const goal1 = {
+  name: "Joy of React",
+  id: "1",
+  description: "by Josh Cameau",
+  category: "Education",
+  completion: 0.02,
+  isCompleted: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  completedAt: new Date(),
+  image: "https://i.imgur.com/zGaB4zf.png",
+};
+
+const goal2 = {
+  name: "Total Typescript",
+  id: "2",
+  description: "by Matt Pocock",
+  category: "Education",
+  completion: 1,
+  isCompleted: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  completedAt: new Date(),
+  image: "https://i.imgur.com/tnuKXQf.png",
+};
+
+const goal3 = {
+  name: "T3App Tutorial",
+  id: "3",
+  description: "By Theo. Beginner course to T3App",
+  category: "Hands-on",
+  completion: 0,
+  isCompleted: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  completedAt: new Date(),
+  image: "https://i.imgur.com/mZ3D5A3.png",
+};
+
+const goal4 = {
+  name: "T3App",
+  id: "4",
+  description: "Create a production ready-app for tracking goals",
+  category: "Hands-on",
+  completion: 0,
+  isCompleted: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  completedAt: new Date(),
+  image: "https://i.imgur.com/C9QB8oj.png",
+};
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const all = api.example.getAll.useQuery();
+
   console.log("all", all.data);
   console.log("hello", hello.data);
 
   const goals = api.goals.getAll.useQuery();
   console.log("goals", goals.data);
+
+  const createGoalMutation = api.goals.addGoal.useMutation();
+  const deleteGoalMutation = api.goals.deleteGoal.useMutation();
+  const editGoalMutation = api.goals.editGoal.useMutation();
   return (
     <>
       <Head>
@@ -62,75 +121,237 @@ const Home: NextPage = () => {
             <AuthShowcase />
           </div>
           <h1 className={styles.title}>My Goals</h1>
-          {goals?.data?.map((goal) => (
-            <Card shadow="sm" padding="lg" radius="md" withBorder key={goal.id}>
-              <Card.Section>
-                <Image src={goal.image} height={160} alt={goal.name} />
-              </Card.Section>
+          <Group position="center">
+            {goals?.data?.map((goal) => (
+              <Card
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+                key={goal.id}
+              >
+                <Card.Section>
+                  <Image src={goal.image} height={160} alt={goal.name} />
+                </Card.Section>
 
-              <Group position="apart" mt="md" mb="xs">
-                <Text weight={500}>{goal.name}</Text>
-                <Badge
-                  color={goal.completion === 1 ? "green" : "orange"}
-                  variant="light"
-                >
-                  Progress: {goal.completion * 100} %
-                </Badge>
-              </Group>
+                <Group position="apart" mt="md" mb="xs">
+                  <Text weight={500}>{goal.name}</Text>
+                  <Badge
+                    color={goal.completion === 1 ? "green" : "orange"}
+                    variant="light"
+                  >
+                    Progress: {goal.completion * 100} %
+                  </Badge>
+                </Group>
 
-              <Text size="sm" color="dimmed">
-                {goal.description}
-              </Text>
-              <Group position="apart">
-                <Button
-                  variant="light"
-                  color="blue"
-                  mt="sm"
-                  radius="md"
-                  size="xs"
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="light"
-                  color="blue"
-                  mt="md"
-                  radius="md"
-                  size="xs"
-                >
-                  Add Progress
-                </Button>
-                <Button
-                  variant="light"
-                  color="violet"
-                  mt="md"
-                  radius="md"
-                  size="xs"
-                >
-                  Complete
-                </Button>
-                <Button
-                  variant="light"
-                  color="blue"
-                  mt="md"
-                  radius="md"
-                  size="xs"
-                >
-                  Delete
-                </Button>
-              </Group>
-            </Card>
-          ))}
-          <Button
-            variant="light"
-            color="green"
-            mt="md"
-            radius="md"
-            size="sm"
-            onClick={() => {}}
-          >
-            Add
-          </Button>
+                <Text size="sm" color="dimmed">
+                  {goal.description}
+                </Text>
+                <Group position="apart">
+                  <Button
+                    variant="light"
+                    color="blue"
+                    mt="sm"
+                    radius="md"
+                    size="xs"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="light"
+                    color="blue"
+                    mt="md"
+                    radius="md"
+                    size="xs"
+                  >
+                    Add Progress
+                  </Button>
+                  <Button
+                    variant="light"
+                    color="violet"
+                    mt="md"
+                    radius="md"
+                    size="xs"
+                  >
+                    Complete
+                  </Button>
+                  <Button
+                    variant="light"
+                    color="blue"
+                    mt="md"
+                    radius="md"
+                    size="xs"
+                  >
+                    Delete
+                  </Button>
+                </Group>
+              </Card>
+            ))}
+          </Group>
+          <Group>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                createGoalMutation.mutateAsync(goal1);
+              }}
+            >
+              Add Goal 1
+            </Button>
+            <Button
+              variant="light"
+              color="red"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                deleteGoalMutation.mutateAsync({ id: "1" });
+              }}
+            >
+              Delete Goal 1
+            </Button>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                editGoalMutation.mutateAsync({
+                  id: "1",
+                  image: "https://i.imgur.com/C9QB8oj.png",
+                });
+              }}
+            >
+              Edit Image 1
+            </Button>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                editGoalMutation.mutateAsync({
+                  id: "1",
+                  name: "XXX",
+                });
+              }}
+            >
+              Edit Name 1
+            </Button>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                editGoalMutation.mutateAsync({
+                  id: "1",
+                  description: "XXX",
+                });
+              }}
+            >
+              Edit Description 1
+            </Button>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                editGoalMutation.mutateAsync({
+                  id: "1",
+                  completion: 0,
+                });
+              }}
+            >
+              Edit Completion 1
+            </Button>
+          </Group>
+          <Group>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                createGoalMutation.mutateAsync(goal2);
+              }}
+            >
+              Add Goal 2
+            </Button>
+            <Button
+              variant="light"
+              color="red"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                deleteGoalMutation.mutateAsync({ id: "2" });
+              }}
+            >
+              Delete Goal 2
+            </Button>
+          </Group>
+          <Group>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                createGoalMutation.mutateAsync(goal3);
+              }}
+            >
+              Add Goal 3
+            </Button>
+            <Button
+              variant="light"
+              color="red"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                deleteGoalMutation.mutateAsync({ id: "3" });
+              }}
+            >
+              Delete Goal 3
+            </Button>
+          </Group>
+          <Group>
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                createGoalMutation.mutateAsync(goal4);
+              }}
+            >
+              Add Goal 4
+            </Button>
+            <Button
+              variant="light"
+              color="red"
+              mt="md"
+              radius="md"
+              size="sm"
+              onClick={() => {
+                deleteGoalMutation.mutateAsync({ id: "4" });
+              }}
+            >
+              Delete Goal 4
+            </Button>
+          </Group>
         </div>
       </main>
     </>
