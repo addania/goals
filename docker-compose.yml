@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: t3appgoals
       POSTGRES_DB: goalsdb
     ports:
-      - "5432:5432"
+      - "5431:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 

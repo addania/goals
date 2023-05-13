@@ -1,3 +1,36 @@
+## Learn More
+
+Welcome to goals add
+
+Start docker locally with:
+
+- docker-compose up -d
+
+Start dev server with:
+
+- npm run dev
+
+Start prisma studio:
+
+- npx prisma studio
+
+If you need to make some changes to the docker:
+
+- docker-compose up -d
+- npx prisma generate
+- npm run dev
+- npx prisma studio
+
+If you need to make prisma migration:
+
+- npx prisma migrate dev
+
+If you want to see which containers run at which ports:
+
+- docker ps
+
+If you change docker ports, then update firts port indocker-compose.yml and url in schema.prisma
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.

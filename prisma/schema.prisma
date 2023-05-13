@@ -17,7 +17,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = "postgresql://addania:t3appgoals@localhost:5432/goalsdb?schema=public"
+  url = "postgresql://addania:t3appgoals@localhost:5431/goalsdb?schema=public"
 }
 
 

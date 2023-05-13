@@ -1,11 +1,57 @@
+import * as z from "zod";
+
 import styles from "./index.module.css";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Card, Image, Text, Badge, Button, Group } from "@mantine/core";
+// import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
+
+//import * as ReactHookForm from "react-hook-form";
 
 import { api } from "~/utils/api";
+
+const { zodResolver } = require("@hookform/resolvers/zod");
+
+const goalSchema = z.object({
+  id: z
+    .string({
+      required_error: "Id is required",
+      invalid_type_error: "Id must be a unique id",
+    })
+    .min(2),
+  name: z
+    .string({
+      required_error: "Name is required",
+      invalid_type_error: "Name must be a string",
+    })
+    .nonempty(),
+  description: z.string({
+    required_error: "Description is required",
+    invalid_type_error: "Description must be a string",
+  }),
+  category: z.string({
+    required_error: "Category is required",
+    invalid_type_error: "Category must be a string",
+  }),
+  image: z
+    .string({
+      required_error: "Image is required",
+      invalid_type_error: "Image must be a valid url",
+    })
+    .url(),
+  /*completion: z.number(),
+  isCompleted: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  completedAt: z.date(),
+  */
+});
+
+type GoalSchema = z.infer<typeof goalSchema>;
 
 // https://i.imgur.com/zGaB4zf.png
 // https://i.imgur.com/tnuKXQf.png
@@ -23,6 +69,126 @@ const goal1 = {
   updatedAt: new Date(),
   completedAt: new Date(),
   image: "https://i.imgur.com/zGaB4zf.png",
+};
+
+const GoalForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    // watch,
+    // setError,
+  } = useForm<GoalSchema>({
+    // reValidateMode: "onBlur",
+    // mode: "onBlur",
+    // reValidateMode: "onBlur",
+    resolver: zodResolver(goalSchema),
+  });
+
+  /*const id = watch("id");
+  const name = watch("name");
+  const description = watch("description");
+  const category = watch("category");
+  const image = watch("image");*/
+
+  const { mutate: createGoalMutation, isLoading } =
+    api.goals.addGoal.useMutation();
+
+  console.log("errors1", errors);
+
+  const onSubmit = (data: GoalSchema) => {
+    console.log("Submitting triggered", data);
+    console.log("errors2", errors);
+
+    const goal = {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      category: data.category,
+      completion: 0,
+      isCompleted: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completedAt: new Date(),
+      image: data.image,
+    };
+
+    createGoalMutation(goal, {
+      onSuccess: () => {
+        toast.success("Successfully created your goal.");
+      },
+      onError: ({ data }) => {
+        toast.error(
+          `Failed to create goal. Application returned: ${data.code}`
+        );
+        console.log("dataaaaa from error", data);
+        /* setError(
+          "id",
+          { type: "id", message: "Duplicated id" },
+          { shouldFocus: index === 0 }
+        );*/
+        /*if (data?.formErrors) {
+          data.formErrors.forEach((error, index) => {
+            setError(
+              error.key as keyof Schema,
+              { type: error.type, message: error.message },
+              { shouldFocus: index === 0 }
+            );
+          });
+        }*/
+      },
+    });
+  };
+
+  return (
+    <form
+      //THIS FUNCTION IS ONLY CALLED IF VALIDATION IS SUCCESSFULL
+      onSubmit={handleSubmit(onSubmit)}
+      style={{ color: "black", backgroundColor: "white" }}
+      id="goal_form"
+    >
+      <div>* ID</div>
+      <input
+        type="text"
+        {...register("id")}
+        placeholder="id" /* defaultValue="5"*/
+      />
+      {errors.id && <p>{errors.id.message}</p>}
+      <div>* NAME</div>
+      <input
+        type="text"
+        {...register("name")}
+        placeholder="Name your goal"
+        // defaultValue="Crypt raider"
+      />
+      {errors.name && <p>{errors.name.message}</p>}
+      <div>* DESCRIPTION</div>
+      <input
+        type="text"
+        {...register("description")}
+        placeholder="Add details about your goal"
+        // defaultValue="XXX"
+      />
+      {errors.description && <p>{errors.description.message}</p>}
+      <div>* CATEGORY</div>
+      <input
+        type="text"
+        {...register("category")}
+        placeholder="Group your goal"
+        //defaultValue="Education"
+      />
+      {errors.category && <p>{errors.category.message}</p>}
+      <div>* IMAGE URL</div>
+      <input
+        type="text"
+        {...register("image")}
+        placeholder="url of image"
+        //  defaultValue="https://i.imgur.com/zGaB4zf.png"
+      />
+      {errors.image && <p>{errors.image.message}</p>}
+      <input type="submit" />
+    </form>
+  );
 };
 
 const goal2 = {
@@ -68,11 +234,7 @@ const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const all = api.example.getAll.useQuery();
 
-  console.log("all", all.data);
-  console.log("hello", hello.data);
-
   const goals = api.goals.getAll.useQuery();
-  console.log("goals", goals.data);
 
   const createGoalMutation = api.goals.addGoal.useMutation();
   const deleteGoalMutation = api.goals.deleteGoal.useMutation();
@@ -353,6 +515,7 @@ const Home: NextPage = () => {
             </Button>
           </Group>
         </div>
+        <GoalForm />
       </main>
     </>
   );
