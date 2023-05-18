@@ -9,55 +9,48 @@ import {
 
 export const goalsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const test = await ctx.prisma.goal.findUnique({ where: { id: "1" } });
+    // const test = await ctx.prisma.goal.findUnique({ where: { id: "1" } });
 
-    return ctx.prisma.goal.findMany();
+    return ctx.prisma.goal.findMany({
+      // take: 100,
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+      ],
+      //  where: { authorId: "user_2OBaeJj8EI29omUN4LZTUFl7TBh" },
+    });
   }),
 
   addGoal: protectedProcedure
     .input(
       z.object({
         name: z.string(),
-        id: z.string(),
-        description: z.string(),
-        category: z.string(),
-        completion: z.number(),
-        isCompleted: z.boolean(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-        completedAt: z.date(),
-        image: z.string().url(),
+        description: z.string().optional(),
+        category: z.string().optional(),
+        completion: z.number().optional(),
+        image: z
+          .string()
+          .refine((value) => value === "" || new URL(value), {
+            message: "Image must be a valid URL or empty",
+          })
+          .optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const {
-        name,
-        id,
-        description,
-        category,
-        completion,
-        isCompleted,
-        createdAt,
-        updatedAt,
-        completedAt,
-        image,
-      } = input;
+      const { name, description, category, completion, image } = input;
+      console.log("imageeeee", image);
       try {
         const newGoal = await ctx.prisma.goal.create({
           data: {
             name,
-            id,
             description,
             category,
             completion,
-            isCompleted,
-            createdAt,
-            updatedAt,
-            completedAt,
-            image,
+            image: image === "" ? undefined : image,
           },
         });
-
+        console.log("imageeeee", image);
         return newGoal;
       } catch (error) {
         throw new TRPCError({

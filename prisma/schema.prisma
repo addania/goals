@@ -21,17 +21,25 @@ datasource db {
 }
 
 
+//model Goal {
+//    name        String
+//    id          String   @id @default(cuid())
+//    description String   @default("")
+//    category    String   @default("")
+//    completion  Float    @default(0)
+//    createdAt   DateTime @default(now())
+ //   image       String   @default("")
+//}
+
+
 model Goal {
-    name        String
-    id          String   @id @default(cuid())
-    description String
-    category    String
-    completion  Float
-    isCompleted Boolean
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    completedAt DateTime @updatedAt
-    image       String   @default("")
+  name        String
+  id          String  @id @default(cuid())
+  description String?
+  category    String?
+  completion  Float? @default(0)
+  createdAt   DateTime? @default(now())
+  image       String? @default("https://i.imgur.com/XKsUTJn.png")
 }
 
 model Example {
