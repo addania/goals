@@ -372,7 +372,7 @@ const goal4 = {
 };
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
   //const all = api.example.getAll.useQuery();
 
   const goals = api.goals.getAll.useQuery();
@@ -405,9 +405,9 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <div className={styles.container}>
           <div className={styles.showcaseContainer}>
-            <p className={styles.showcaseText}>
+            {/*<p className={styles.showcaseText}>
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
+            </p>*/}
             <AuthShowcase />
           </div>
           <Modal

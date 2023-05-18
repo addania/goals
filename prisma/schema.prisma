@@ -20,7 +20,7 @@ datasource db {
   url = "postgresql://addania:t3appgoals@localhost:5431/goalsdb?schema=public"
 }
 
-
+// OLD
 //model Goal {
 //    name        String
 //    id          String   @id @default(cuid())
