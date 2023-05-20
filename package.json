@@ -30,7 +30,13 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.17.0",
     "react-hot-toast": "^2.4.1",
+    "react-particles": "^2.9.3",
+    "react-tsparticles": "^2.9.3",
     "superjson": "1.9.1",
+    "tsparticles": "^2.9.3",
+    "tsparticles-engine": "^2.9.3",
+    "tsparticles-preset-confetti": "^2.9.3",
+    "tsparticles-preset-fireworks": "^2.9.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {

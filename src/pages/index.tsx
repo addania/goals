@@ -1,4 +1,3 @@
-import * as z from "zod";
 import * as React from "react";
 
 import styles from "./index.module.css";
@@ -7,7 +6,6 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 import {
   Card,
-  Divider,
   Image,
   Modal,
   Text,
@@ -16,360 +14,17 @@ import {
   Group,
   Space,
 } from "@mantine/core";
-//import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { useDisclosure } from "@mantine/hooks";
 
-//import * as ReactHookForm from "react-hook-form";
+import { Fireworks } from "./components/animationEffects/Fireworks";
+import { Polygons } from "./components/animationEffects/Polygons";
+import { Confetti } from "./components/animationEffects/Confetti";
+import { AddGoalForm } from "./components/Forms/AddGoalForm";
+import { EditGoalForm } from "./components/Forms/EditGoalForm";
+import { goal1, goal2, goal3, goal4 } from "./constants/goals";
 
 import { api } from "~/utils/api";
-
-const { zodResolver } = require("@hookform/resolvers/zod");
-
-const goalSchema = z.object({
-  name: z
-    .string({
-      required_error: "Name is required",
-      invalid_type_error: "Name must be a string",
-    })
-    .nonempty(),
-  description: z
-    .string({ invalid_type_error: "Name must be a string" })
-    .optional(),
-  category: z
-    .string({
-      invalid_type_error: "Category must be a string",
-    })
-    .optional(),
-  image: z
-    .string()
-    .refine((value) => value === "" || new URL(value), {
-      message: "Image must be a valid URL or empty",
-    })
-    .optional(),
-});
-
-const editGoalSchema = goalSchema.extend({
-  completion: z.string().refine((value) => {
-    const num = Number(value);
-    return num >= 0 && num <= 100;
-  }, "Completion must be a number from 0 to 100"),
-});
-
-type GoalSchema = z.infer<typeof goalSchema>;
-
-type GoalSchemaWithCompletion = GoalSchema & { completion: number; id: string };
-// https://i.imgur.com/zGaB4zf.png
-// https://i.imgur.com/tnuKXQf.png
-// https://i.imgur.com/mZ3D5A3.png
-// https://i.imgur.com/mZ3D5A3.png
-
-const goal1 = {
-  name: "Joy of React",
-  description: "by Josh Cameau",
-  category: "Education",
-  completion: 20,
-  image: "https://i.imgur.com/zGaB4zf.png",
-};
-
-type Props = {
-  close: () => void;
-};
-
-type EditProps = Props & { goal: GoalSchemaWithCompletion };
-
-const EditGoalForm = ({ close, goal }: EditProps) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<GoalSchemaWithCompletion>({
-    resolver: zodResolver(editGoalSchema),
-  });
-  const editGoalMutation = api.goals.editGoal.useMutation();
-  const ctx = api.useContext();
-
-  const onSubmit = (data: GoalSchemaWithCompletion) => {
-    const newGoal = {
-      id: goal.id,
-      name: data.name,
-      description: data.description,
-      category: data.category,
-      completion: Number(data.completion),
-      image: data.image,
-    };
-
-    editGoalMutation.mutate(newGoal, {
-      onSuccess: () => {
-        toast.success("Successfully edited your goal.");
-        void ctx.goals.getAll.invalidate();
-        close();
-      },
-      onError: ({ data }) => {
-        toast.error(`Failed to edit goal. Application returned: ${data.code}`);
-      },
-    });
-  };
-
-  return (
-    <>
-      <Divider my="sm" />
-      <form
-        //THIS FUNCTION IS ONLY CALLED IF VALIDATION IS SUCCESSFULL
-        onSubmit={handleSubmit(onSubmit)}
-        style={{ color: "black", backgroundColor: "white" }}
-        id="goal_form"
-      >
-        <div style={{ margin: "16px 0" }}>
-          <div>
-            <span style={{ color: "red" }}>*</span>
-            <span> Name</span>
-          </div>
-          <input
-            type="text"
-            {...register("name")}
-            placeholder="Name your goal"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-            defaultValue={goal.name}
-          />
-          {errors.name && <p>{errors.name.message}</p>}
-        </div>
-        <div style={{ margin: "16px 0" }}>
-          <div>Description</div>
-          <input
-            type="text"
-            {...register("description")}
-            placeholder="Add details about your goal"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-            defaultValue={goal.description}
-          />
-          {errors.description && <p>{errors.description.message}</p>}
-        </div>
-        <div style={{ margin: "16px 0" }}>
-          <div>Category</div>
-          <input
-            type="text"
-            {...register("category")}
-            placeholder="Group your goal"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-            defaultValue={goal.category}
-          />
-          {errors.category && <p>{errors.category.message}</p>}
-        </div>
-        <div style={{ margin: "16px 0" }}>
-          <div>Completion (%)</div>
-          <input
-            type="number"
-            {...register("completion")}
-            placeholder="Number from 0 to 100"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-            defaultValue={goal.completion}
-          />
-          {errors.completion && <p>{errors.completion.message}</p>}
-        </div>
-
-        <div style={{ margin: "16px 0" }}>
-          <div>Image url</div>
-          <input
-            type="url"
-            {...register("image")}
-            placeholder="Url of image"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-            defaultValue={goal.image}
-          />
-          {errors.image && <p>{errors.image.message}</p>}
-        </div>
-        <input
-          style={{
-            backgroundColor: "#E7F5FF",
-            color: "#228be6",
-            border: "none",
-            borderRadius: "5px",
-            padding: "8px 16px",
-            fontWeight: "bold",
-          }}
-          type="submit"
-        />
-      </form>
-    </>
-  );
-};
-
-const GoalForm = ({ close }: Props) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<GoalSchema>({
-    resolver: zodResolver(goalSchema),
-  });
-
-  const { mutate: createGoalMutation, isLoading } =
-    api.goals.addGoal.useMutation();
-  const ctx = api.useContext();
-
-  const onSubmit = (data: GoalSchema) => {
-    const goal = {
-      name: data.name,
-      description: data.description,
-      category: data.category,
-      image: data.image,
-    };
-
-    createGoalMutation(goal, {
-      onSuccess: () => {
-        toast.success("Successfully created your goal.");
-        void ctx.goals.getAll.invalidate();
-        close();
-      },
-      onError: ({ data }) => {
-        toast.error(
-          `Failed to create goal. Application returned: ${data.code}`
-        );
-      },
-    });
-  };
-
-  return (
-    <>
-      <Divider my="sm" />
-      <form
-        //THIS FUNCTION IS ONLY CALLED IF VALIDATION IS SUCCESSFULL
-        onSubmit={handleSubmit(onSubmit)}
-        style={{ color: "black", backgroundColor: "white" }}
-        id="goal_form"
-      >
-        <div style={{ margin: "16px 0" }}>
-          <div>
-            <span style={{ color: "red" }}>*</span>
-            <span> Name</span>
-          </div>
-          <input
-            type="text"
-            {...register("name")}
-            placeholder="Name your goal"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-          />
-          {errors.name && <p>{errors.name.message}</p>}
-        </div>
-        <div style={{ margin: "16px 0" }}>
-          <div>
-            Description <span style={{ color: "#868E96" }}>(optional)</span>
-          </div>
-          <input
-            type="text"
-            {...register("description")}
-            placeholder="Add details about your goal"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-          />
-          {errors.description && <p>{errors.description.message}</p>}
-        </div>
-        <div style={{ margin: "16px 0" }}>
-          <div>
-            Category <span style={{ color: "#868E96" }}>(optional)</span>
-          </div>
-          <input
-            type="text"
-            {...register("category")}
-            placeholder="Group your goal"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-          />
-          {errors.category && <p>{errors.category.message}</p>}
-        </div>
-        <div style={{ margin: "16px 0" }}>
-          <div>
-            Image url <span style={{ color: "#868E96" }}>(optional)</span>
-          </div>
-          <input
-            type="url"
-            {...register("image")}
-            placeholder="Url of image"
-            style={{
-              padding: "4px 8px",
-              border: "1px solid #868E96",
-              borderRadius: "2px",
-              width: "100%",
-            }}
-          />
-          {errors.image && <p>{errors.image.message}</p>}
-        </div>
-        <input
-          style={{
-            backgroundColor: "#E7F5FF",
-            color: "#228be6",
-            border: "none",
-            borderRadius: "5px",
-            padding: "8px 16px",
-            fontWeight: "bold",
-          }}
-          type="submit"
-        />
-      </form>
-    </>
-  );
-};
-
-const goal2 = {
-  name: "Total Typescript",
-  description: "by Matt Pocock",
-  category: "Education",
-  image: "https://i.imgur.com/tnuKXQf.png",
-};
-
-const goal3 = {
-  name: "T3App Tutorial",
-  description: "By Theo. Beginner course to T3App",
-  category: "Hands-on",
-  image: "https://i.imgur.com/mZ3D5A3.png",
-};
-
-const goal4 = {
-  name: "T3App",
-  description: "Create a production ready-app for tracking goals",
-  category: "Hands-on",
-  image: "https://i.imgur.com/C9QB8oj.png",
-};
 
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
@@ -395,6 +50,11 @@ const Home: NextPage = () => {
     );
   };
   const ctx = api.useContext();
+
+  const [showAnimation, setShowAnimation] = React.useState<
+    "fireworks" | "confetti" | null
+  >(null);
+
   return (
     <>
       <Head>
@@ -404,7 +64,10 @@ const Home: NextPage = () => {
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
-          <div className={styles.showcaseContainer}>
+          {showAnimation === "fireworks" && <Fireworks />}
+          {showAnimation === "confetti" && <Confetti />}
+          {!showAnimation && <Space h="0px" />}
+          <div className={styles.showcaseContainer} style={{ zIndex: 2 }}>
             {/*<p className={styles.showcaseText}>
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             </p>*/}
@@ -415,10 +78,12 @@ const Home: NextPage = () => {
             onClose={createFormClose}
             title="Create your goal"
           >
-            <GoalForm close={createFormClose} />
+            <AddGoalForm close={createFormClose} />
           </Modal>
 
-          <h1 className={styles.title}>My Goals</h1>
+          <h1 className={styles.title} style={{ zIndex: 2 }}>
+            My Goals
+          </h1>
           <Button
             onClick={createFormOpen}
             variant="light"
@@ -429,6 +94,7 @@ const Home: NextPage = () => {
           >
             + Add goal
           </Button>
+
           <Group position="center">
             {goals?.data?.map((goal) => (
               <div style={{ minWidth: "400px" }} key={goal.id}>
@@ -493,10 +159,18 @@ const Home: NextPage = () => {
                           },
                           {
                             onSuccess: () => {
-                              void ctx.goals.getAll.invalidate();
+                              const randomComponent =
+                                Math.random() < 0.5 ? "fireworks" : "confetti";
                               toast.success(
                                 "Successfully completed your goal."
                               );
+
+                              setShowAnimation(randomComponent);
+                              setTimeout(() => {
+                                setShowAnimation(null);
+                              }, 5000);
+
+                              void ctx.goals.getAll.invalidate();
                             },
                             onError: () => {
                               toast.error("Failed to complete goal.");
