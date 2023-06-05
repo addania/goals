@@ -129,6 +129,7 @@ const Home: NextPage = () => {
                   >
                     <EditGoalForm
                       close={() => closeGoalModal(goal.id)}
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                       // @ts-ignore-next-line
                       goal={goal}
                     />

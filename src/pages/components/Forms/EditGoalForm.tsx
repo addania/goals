@@ -10,6 +10,7 @@ import { goalSchema } from "../../types/goal";
 import type { GoalSchema } from "../../types/goal";
 import { api } from "~/utils/api";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const { zodResolver } = require("@hookform/resolvers/zod");
 
 type GoalSchemaWithCompletion = GoalSchema & { completion: number; id: string };
