@@ -18,7 +18,6 @@ import { toast } from "react-hot-toast";
 import { useDisclosure } from "@mantine/hooks";
 
 import { Fireworks } from "./components/animationEffects/Fireworks";
-import { Polygons } from "./components/animationEffects/Polygons";
 import { Confetti } from "./components/animationEffects/Confetti";
 import { AddGoalForm } from "./components/Forms/AddGoalForm";
 import { EditGoalForm } from "./components/Forms/EditGoalForm";
@@ -130,6 +129,7 @@ const Home: NextPage = () => {
                   >
                     <EditGoalForm
                       close={() => closeGoalModal(goal.id)}
+                      // @ts-ignore-next-line
                       goal={goal}
                     />
                   </Modal>
