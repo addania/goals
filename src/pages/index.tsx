@@ -38,13 +38,13 @@ const Home: NextPage = () => {
   const [createFormOpened, { open: createFormOpen, close: createFormClose }] =
     useDisclosure(false);
 
-  const [openedGoals, setOpenedGoals] = React.useState<number[]>([]);
+  const [openedGoals, setOpenedGoals] = React.useState<string[]>([]);
 
-  const openGoalModal = (goalId: number) => {
+  const openGoalModal = (goalId: string) => {
     setOpenedGoals((prevOpenedGoals) => [...prevOpenedGoals, goalId]);
   };
 
-  const closeGoalModal = (goalId: number) => {
+  const closeGoalModal = (goalId: string) => {
     setOpenedGoals((prevOpenedGoals) =>
       prevOpenedGoals.filter((id) => id !== goalId)
     );
