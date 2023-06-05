@@ -1,82 +1,60 @@
+import * as React from "react";
+
 import styles from "./index.module.css";
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Card, Image, Text, Badge, Button, Group } from "@mantine/core";
+import {
+  Card,
+  Image,
+  Modal,
+  Text,
+  Badge,
+  Button,
+  Group,
+  Space,
+} from "@mantine/core";
+import { toast } from "react-hot-toast";
+import { useDisclosure } from "@mantine/hooks";
+
+import { Fireworks } from "./components/animationEffects/Fireworks";
+import { Polygons } from "./components/animationEffects/Polygons";
+import { Confetti } from "./components/animationEffects/Confetti";
+import { AddGoalForm } from "./components/Forms/AddGoalForm";
+import { EditGoalForm } from "./components/Forms/EditGoalForm";
+import { goal1, goal2, goal3, goal4 } from "./constants/goals";
 
 import { api } from "~/utils/api";
 
-// https://i.imgur.com/zGaB4zf.png
-// https://i.imgur.com/tnuKXQf.png
-// https://i.imgur.com/mZ3D5A3.png
-// https://i.imgur.com/mZ3D5A3.png
-
-const goal1 = {
-  name: "Joy of React",
-  id: "1",
-  description: "by Josh Cameau",
-  category: "Education",
-  completion: 0.02,
-  isCompleted: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  completedAt: new Date(),
-  image: "https://i.imgur.com/zGaB4zf.png",
-};
-
-const goal2 = {
-  name: "Total Typescript",
-  id: "2",
-  description: "by Matt Pocock",
-  category: "Education",
-  completion: 1,
-  isCompleted: true,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  completedAt: new Date(),
-  image: "https://i.imgur.com/tnuKXQf.png",
-};
-
-const goal3 = {
-  name: "T3App Tutorial",
-  id: "3",
-  description: "By Theo. Beginner course to T3App",
-  category: "Hands-on",
-  completion: 0,
-  isCompleted: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  completedAt: new Date(),
-  image: "https://i.imgur.com/mZ3D5A3.png",
-};
-
-const goal4 = {
-  name: "T3App",
-  id: "4",
-  description: "Create a production ready-app for tracking goals",
-  category: "Hands-on",
-  completion: 0,
-  isCompleted: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  completedAt: new Date(),
-  image: "https://i.imgur.com/C9QB8oj.png",
-};
-
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const all = api.example.getAll.useQuery();
-
-  console.log("all", all.data);
-  console.log("hello", hello.data);
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  //const all = api.example.getAll.useQuery();
 
   const goals = api.goals.getAll.useQuery();
-  console.log("goals", goals.data);
-
   const createGoalMutation = api.goals.addGoal.useMutation();
   const deleteGoalMutation = api.goals.deleteGoal.useMutation();
   const editGoalMutation = api.goals.editGoal.useMutation();
+
+  const [createFormOpened, { open: createFormOpen, close: createFormClose }] =
+    useDisclosure(false);
+
+  const [openedGoals, setOpenedGoals] = React.useState<number[]>([]);
+
+  const openGoalModal = (goalId: number) => {
+    setOpenedGoals((prevOpenedGoals) => [...prevOpenedGoals, goalId]);
+  };
+
+  const closeGoalModal = (goalId: number) => {
+    setOpenedGoals((prevOpenedGoals) =>
+      prevOpenedGoals.filter((id) => id !== goalId)
+    );
+  };
+  const ctx = api.useContext();
+
+  const [showAnimation, setShowAnimation] = React.useState<
+    "fireworks" | "confetti" | null
+  >(null);
+
   return (
     <>
       <Head>
@@ -86,106 +64,149 @@ const Home: NextPage = () => {
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
-          <h1 className={styles.title}>
-            Yay, finally here! Create{" "}
-            <span className={styles.pinkSpan}>T3</span> App
-          </h1>
-          <div className={styles.cardRow}>
-            <Link
-              className={styles.card}
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className={styles.cardTitle}>First Steps →</h3>
-              <div className={styles.cardText}>
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className={styles.card}
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className={styles.cardTitle}>Documentation →</h3>
-              <div className={styles.cardText}>
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className={styles.showcaseContainer}>
-            <p className={styles.showcaseText}>
+          {showAnimation === "fireworks" && <Fireworks />}
+          {showAnimation === "confetti" && <Confetti />}
+          {!showAnimation && <Space h="0px" />}
+          <div className={styles.showcaseContainer} style={{ zIndex: 2 }}>
+            {/*<p className={styles.showcaseText}>
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
+            </p>*/}
             <AuthShowcase />
           </div>
-          <h1 className={styles.title}>My Goals</h1>
+          <Modal
+            opened={createFormOpened}
+            onClose={createFormClose}
+            title="Create your goal"
+          >
+            <AddGoalForm close={createFormClose} />
+          </Modal>
+
+          <h1 className={styles.title} style={{ zIndex: 2 }}>
+            My Goals
+          </h1>
+          <Button
+            onClick={createFormOpen}
+            variant="light"
+            color="blue"
+            mt="sm"
+            radius="md"
+            size="lg"
+          >
+            + Add goal
+          </Button>
+
           <Group position="center">
             {goals?.data?.map((goal) => (
-              <Card
-                shadow="sm"
-                padding="lg"
-                radius="md"
-                withBorder
-                key={goal.id}
-              >
-                <Card.Section>
-                  <Image src={goal.image} height={160} alt={goal.name} />
-                </Card.Section>
+              <div style={{ minWidth: "400px" }} key={goal.id}>
+                <Card
+                  shadow="sm"
+                  padding="lg"
+                  radius="md"
+                  withBorder
+                  key={goal.id}
+                  style={{ minWidth: "200px" }}
+                >
+                  <Card.Section>
+                    <Image src={goal.image} height={160} alt={goal.name} />
+                  </Card.Section>
+                  <Group position="apart" mt="md" mb="xs">
+                    <Text weight={500}>{goal.name}</Text>
+                    <Badge
+                      color={goal.completion === 100 ? "green" : "orange"}
+                      variant="light"
+                    >
+                      Progress: {goal.completion} %
+                    </Badge>
+                  </Group>
+                  <Text size="sm" color="dimmed">
+                    {goal.description}
+                    {goal.description === undefined ||
+                      (goal.description === "" && <Space h="lg" />)}
+                  </Text>
+                  <Modal
+                    opened={openedGoals.includes(goal.id)}
+                    onClose={() => closeGoalModal(goal.id)}
+                    title="Edit goal"
+                  >
+                    <EditGoalForm
+                      close={() => closeGoalModal(goal.id)}
+                      goal={goal}
+                    />
+                  </Modal>
+                  <Group position="apart">
+                    <Button
+                      variant="light"
+                      color="blue"
+                      mt="sm"
+                      radius="md"
+                      size="xs"
+                      onClick={() => openGoalModal(goal.id)}
+                    >
+                      ✎ Edit
+                    </Button>
 
-                <Group position="apart" mt="md" mb="xs">
-                  <Text weight={500}>{goal.name}</Text>
-                  <Badge
-                    color={goal.completion === 1 ? "green" : "orange"}
-                    variant="light"
-                  >
-                    Progress: {goal.completion * 100} %
-                  </Badge>
-                </Group>
+                    <Button
+                      variant="light"
+                      color="green"
+                      mt="md"
+                      radius="md"
+                      size="xs"
+                      onClick={() => {
+                        editGoalMutation.mutate(
+                          {
+                            id: goal.id,
+                            completion: 100,
+                          },
+                          {
+                            onSuccess: () => {
+                              const randomComponent =
+                                Math.random() < 0.5 ? "fireworks" : "confetti";
+                              toast.success(
+                                "Successfully completed your goal."
+                              );
 
-                <Text size="sm" color="dimmed">
-                  {goal.description}
-                </Text>
-                <Group position="apart">
-                  <Button
-                    variant="light"
-                    color="blue"
-                    mt="sm"
-                    radius="md"
-                    size="xs"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="light"
-                    color="blue"
-                    mt="md"
-                    radius="md"
-                    size="xs"
-                  >
-                    Add Progress
-                  </Button>
-                  <Button
-                    variant="light"
-                    color="violet"
-                    mt="md"
-                    radius="md"
-                    size="xs"
-                  >
-                    Complete
-                  </Button>
-                  <Button
-                    variant="light"
-                    color="blue"
-                    mt="md"
-                    radius="md"
-                    size="xs"
-                  >
-                    Delete
-                  </Button>
-                </Group>
-              </Card>
+                              setShowAnimation(randomComponent);
+                              setTimeout(() => {
+                                setShowAnimation(null);
+                              }, 5000);
+
+                              void ctx.goals.getAll.invalidate();
+                            },
+                            onError: () => {
+                              toast.error("Failed to complete goal.");
+                            },
+                          }
+                        );
+                      }}
+                    >
+                      ✅ Complete
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="red"
+                      mt="md"
+                      radius="md"
+                      size="xs"
+                      onClick={() => {
+                        deleteGoalMutation.mutate(
+                          { id: goal.id },
+                          {
+                            onSuccess: () => {
+                              toast.success("Successfully deleted your goal.");
+                              void ctx.goals.getAll.invalidate();
+                            },
+                            onError: () => {
+                              toast.error("Failed to delete goal.");
+                            },
+                          }
+                        );
+                      }}
+                    >
+                      🗑️ Delete
+                    </Button>
+                  </Group>
+                </Card>
+              </div>
             ))}
           </Group>
           <Group>
@@ -203,80 +224,6 @@ const Home: NextPage = () => {
             </Button>
             <Button
               variant="light"
-              color="red"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                deleteGoalMutation.mutate({ id: "1" });
-              }}
-            >
-              Delete Goal 1
-            </Button>
-            <Button
-              variant="light"
-              color="green"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                editGoalMutation.mutate({
-                  id: "1",
-                  image: "https://i.imgur.com/C9QB8oj.png",
-                });
-              }}
-            >
-              Edit Image 1
-            </Button>
-            <Button
-              variant="light"
-              color="green"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                editGoalMutation.mutate({
-                  id: "1",
-                  name: "XXX",
-                });
-              }}
-            >
-              Edit Name 1
-            </Button>
-            <Button
-              variant="light"
-              color="green"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                editGoalMutation.mutate({
-                  id: "1",
-                  description: "XXX",
-                });
-              }}
-            >
-              Edit Description 1
-            </Button>
-            <Button
-              variant="light"
-              color="green"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                editGoalMutation.mutate({
-                  id: "1",
-                  completion: 0,
-                });
-              }}
-            >
-              Edit Completion 1
-            </Button>
-          </Group>
-          <Group>
-            <Button
-              variant="light"
               color="green"
               mt="md"
               radius="md"
@@ -287,20 +234,6 @@ const Home: NextPage = () => {
             >
               Add Goal 2
             </Button>
-            <Button
-              variant="light"
-              color="red"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                deleteGoalMutation.mutate({ id: "2" });
-              }}
-            >
-              Delete Goal 2
-            </Button>
-          </Group>
-          <Group>
             <Button
               variant="light"
               color="green"
@@ -315,20 +248,6 @@ const Home: NextPage = () => {
             </Button>
             <Button
               variant="light"
-              color="red"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                deleteGoalMutation.mutate({ id: "3" });
-              }}
-            >
-              Delete Goal 3
-            </Button>
-          </Group>
-          <Group>
-            <Button
-              variant="light"
               color="green"
               mt="md"
               radius="md"
@@ -338,18 +257,6 @@ const Home: NextPage = () => {
               }}
             >
               Add Goal 4
-            </Button>
-            <Button
-              variant="light"
-              color="red"
-              mt="md"
-              radius="md"
-              size="sm"
-              onClick={() => {
-                deleteGoalMutation.mutate({ id: "4" });
-              }}
-            >
-              Delete Goal 4
             </Button>
           </Group>
         </div>
@@ -372,6 +279,7 @@ const AuthShowcase: React.FC = () => {
     <div className={styles.authContainer}>
       <p className={styles.showcaseText}>
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
+        {sessionData && <span> with user id. {sessionData.user?.id}</span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </p>
       <button

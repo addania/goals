@@ -17,19 +17,19 @@ export const exampleRouter = createTRPCRouter({
 
   getAll: publicProcedure.query(async ({ ctx }) => {
     const test = await ctx.prisma.example.findUnique({ where: { id: "1" } });
-    console.log("test", test?.createdAt);
+
     return ctx.prisma.example.findMany();
   }),
 
   getGoals: publicProcedure.query(async ({ ctx }) => {
     const test = await ctx.prisma.goal.findUnique({ where: { id: "1" } });
-    console.log("test", test?.createdAt);
+
     return ctx.prisma.goal.findMany();
   }),
 
   addGoal: publicProcedure.query(async ({ ctx }) => {
     const test = await ctx.prisma.goal.findUnique({ where: { id: "1" } });
-    console.log("test", test?.createdAt);
+
     return ctx.prisma.goal.findMany();
   }),
 
