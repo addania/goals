@@ -11,8 +11,9 @@ export const Polygons = () => {
     await loadFull(main);
   };
 
-  const particlesLoaded = (container: Container | undefined) => {
+  const particlesLoaded = (container: Container | undefined): Promise<void> => {
     console.log(container);
+    return Promise.resolve();
   };
 
   return (
