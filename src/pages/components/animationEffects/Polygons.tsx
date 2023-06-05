@@ -1,8 +1,9 @@
 import Particles from "react-tsparticles";
 import { loadFull } from "tsparticles";
+import type { Container, Main } from "tsparticles-engine";
 
 export const Polygons = () => {
-  const particlesInit = async (main) => {
+  const particlesInit = async (main: Main) => {
     console.log(main);
     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
@@ -10,7 +11,7 @@ export const Polygons = () => {
     await loadFull(main);
   };
 
-  const particlesLoaded = (container) => {
+  const particlesLoaded = (container: Container | undefined) => {
     console.log(container);
   };
 
@@ -63,7 +64,7 @@ export const Polygons = () => {
             enable: true,
           },
           move: {
-            directions: "none",
+            direction: "none",
             enable: true,
             outModes: {
               default: "bounce",
