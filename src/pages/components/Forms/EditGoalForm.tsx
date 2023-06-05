@@ -51,7 +51,9 @@ export const EditGoalForm = ({ close, goal }: EditProps) => {
         close();
       },
       onError: ({ data }) => {
-        toast.error(`Failed to edit goal. Application returned: ${data.code}`);
+        toast.error(
+          `Failed to edit goal. Application returned: ${data ? data.code : ""}`
+        );
       },
     });
   };
