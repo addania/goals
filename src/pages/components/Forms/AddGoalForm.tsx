@@ -45,7 +45,9 @@ export const AddGoalForm = ({ close }: Props) => {
       },
       onError: ({ data }) => {
         toast.error(
-          `Failed to create goal. Application returned: ${data.code}`
+          `Failed to create goal. Application returned: ${
+            data ? data.code : ""
+          }`
         );
       },
     });
