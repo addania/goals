@@ -2,14 +2,11 @@
 CREATE TABLE "Goal" (
     "name" TEXT NOT NULL,
     "id" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "completion" DOUBLE PRECISION NOT NULL,
-    "isCompleted" BOOLEAN NOT NULL,
+    "description" TEXT,
+    "category" TEXT,
+    "completion" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "completedAt" TIMESTAMP(3) NOT NULL,
-    "image" TEXT NOT NULL DEFAULT '',
+    "image" TEXT NOT NULL DEFAULT 'https://i.imgur.com/XKsUTJn.png',
 
     CONSTRAINT "Goal_pkey" PRIMARY KEY ("id")
 );
