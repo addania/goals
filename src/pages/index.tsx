@@ -17,11 +17,11 @@ import {
 import { toast } from "react-hot-toast";
 import { useDisclosure } from "@mantine/hooks";
 
-import { Fireworks } from "./components/animationEffects/Fireworks";
-import { Confetti } from "./components/animationEffects/Confetti";
-import { AddGoalForm } from "./components/Forms/AddGoalForm";
-import { EditGoalForm } from "./components/Forms/EditGoalForm";
-import { goal1, goal2, goal3, goal4 } from "./constants/goals";
+import { Fireworks } from "../components/animationEffects/Fireworks";
+import { Confetti } from "../components/animationEffects/Confetti";
+import { AddGoalForm } from "../components/Forms/AddGoalForm";
+import { EditGoalForm } from "../components/Forms/EditGoalForm";
+import { goal1, goal2, goal3, goal4 } from "../constants/goals";
 
 import { api } from "~/utils/api";
 
