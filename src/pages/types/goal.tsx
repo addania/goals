@@ -23,7 +23,7 @@ export const goalSchema = z.object({
       message: "Image must be a valid URL or empty",
     })
     .optional(),
-  // .nullable(),
+  //.nullable(),
 });
 
 export type GoalSchema = z.infer<typeof goalSchema>;

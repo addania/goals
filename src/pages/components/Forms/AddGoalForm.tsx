@@ -9,7 +9,9 @@ import { toast } from "react-hot-toast";
 import { goalSchema } from "../../types/goal";
 import type { GoalSchema } from "../../types/goal";
 import { api } from "~/utils/api";
+import type { UseFormProps } from "react-hook-form/dist/types/form";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const { zodResolver } = require("@hookform/resolvers/zod");
 
 type Props = {
@@ -22,11 +24,11 @@ export const AddGoalForm = ({ close }: Props) => {
     handleSubmit,
     formState: { errors },
   } = useForm<GoalSchema>({
-    resolver: zodResolver(goalSchema),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    resolver: zodResolver(goalSchema) as UseFormProps<GoalSchema>["resolver"],
   });
 
-  const { mutate: createGoalMutation, isLoading } =
-    api.goals.addGoal.useMutation();
+  const { mutate: createGoalMutation } = api.goals.addGoal.useMutation();
   const ctx = api.useContext();
 
   const onSubmit = (data: GoalSchema) => {

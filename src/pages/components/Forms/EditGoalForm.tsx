@@ -9,6 +9,10 @@ import { toast } from "react-hot-toast";
 import { goalSchema } from "../../types/goal";
 import type { GoalSchema } from "../../types/goal";
 import { api } from "~/utils/api";
+import type { UseFormProps } from "react-hook-form/dist/types/form";
+
+//import { zodResolver } from "@hookform/resolvers/zod/dist/types";
+//import { zodResolver } from "@hookform/resolvers/zod/dist/compat";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const { zodResolver } = require("@hookform/resolvers/zod");
@@ -30,7 +34,10 @@ export const EditGoalForm = ({ close, goal }: EditProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<GoalSchemaWithCompletion>({
-    resolver: zodResolver(editGoalSchema),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    resolver: zodResolver(
+      editGoalSchema
+    ) as UseFormProps<GoalSchemaWithCompletion>["resolver"],
   });
   const editGoalMutation = api.goals.editGoal.useMutation();
   const ctx = api.useContext();
